@@ -5,9 +5,11 @@ import numpy as np
 import time
 
 
-#path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\SteeringWheel\raw\SteeringWheel_0001.jpg"
-path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\TropicalFish\raw\TropicalFish_0021.jpg"
 
+path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\SteeringWheel\raw\SteeringWheel_0001.jpg"
+#path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\TropicalFish\raw\TropicalFish_0021.jpg"
+#path = "C:\\Users\\Matth\\Documents\\seniorcoding\\Project\\Videos\\Catherdral\\raw\\cathedral_0001.jpg"
+#path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\cathedral\raw\cathedral_0001.jpg"
 #path = r"C:\Users\Matth\Pictures\test.jpg"
 #path = r"C:\Users\Matth\Pictures\four.jpg"
 #path = r"C:\Users\Matth\Documents\seniorcoding\Project\four.jpg"
@@ -23,7 +25,7 @@ print image.shape
 #cv.waitKey()
 
 start = time.time()
-quad = qt.Quadtree(image,10,'Manhattan')
+quad = qt.Quadtree(image,16,'Manhattan')
 end = time.time()-start
 
 print quad.nodecount(), end
@@ -37,7 +39,7 @@ cv.imwrite("output.jpg",output)
 #cv.waitKey()
 
 start = time.time()
-quad2 = qt.Quadtree(image,450,'Variance')
+quad2 = qt.Quadtree(image,2000,'Variance')
 end = time.time()-start
 
 print quad2.nodecount(), end
