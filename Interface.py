@@ -11,8 +11,10 @@ from scipy.spatial import ConvexHull
 
 import matplotlib.pyplot as plt
 
+path = /home/alex_sysadmin/Desktop/ImageTrees/images/SteeringWheel_raw.jpg
 
-path = os.path.join(os.path.abspath(os.curdir),"images/SteeringWheel_raw.jpg")#pass in an image
+# More correct pathing
+# path = os.path.join(os.path.abspath(os.curdir),"images/SteeringWheel_raw.jpg")#pass in an image
 
 
 image = cv.imread(path)
