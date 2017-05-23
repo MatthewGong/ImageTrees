@@ -26,7 +26,7 @@ class Quadtree:
 		Depth 	 :	int,
 			The number of layers in the tree
 
-		Centers	 :	Set of nodes,
+		Cores	 :	Set of nodes,
 			A subset of the nodes representing large areas of the tree
 
 		Edges 	 : 	Set of nodes,
@@ -70,7 +70,7 @@ class Quadtree:
 	Count 		= 0
 	Depth 		= 0
 
-	Centers		= []
+	Cores		= []
 	Edges		= [[0,0]] #starts with the corners included
 	Matrix 		= []
 	Opening 	= None
@@ -181,7 +181,7 @@ class Quadtree:
 						self.Matrix[y-BOX_SIZE:y+BOX_SIZE,x-BOX_SIZE:x+BOX_SIZE] = 255
 
 				else:
-					self.Centers.append(node.pos())
+					self.Cores.append(node.pos())
 
 			else:
 				for child in node.Children:
@@ -214,7 +214,7 @@ class Quadtree:
 				if h < 10 or w < 10:
 					self.Edges.append(node.pos())
 				else:
-					self.Centers.append(node.pos())
+					self.Cores.append(node.pos())
 
 
 				points.append([x,-y])
