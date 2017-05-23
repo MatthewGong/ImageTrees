@@ -1,8 +1,9 @@
 import QuadtreeChannels as qt
-import cv2 as cv 
+import cv2 as cv
 import numpy as np
 import time
 import triangulation as trg
+import os
 
 from scipy.spatial import Delaunay
 from scipy.spatial import Voronoi, voronoi_plot_2d
@@ -11,7 +12,7 @@ from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
 
 
-path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\SteeringWheel\raw\SteeringWheel_0001.jpg"#pass in an image
+path = os.path.join(os.path.abspath(os.curdir),"images/SteeringWheel_raw.jpg")#pass in an image
 
 
 image = cv.imread(path)
@@ -21,7 +22,7 @@ start = time.time()
 quad = qt.Quadtree(image,14,'Manhattan','quad')
 end = time.time()-start
 
-print "Compress: " +  str(quad.nodecount()/float(image.shape[0]*image.shape[1])) 
+print "Compress: " +  str(quad.nodecount()/float(image.shape[0]*image.shape[1]))
 print "Run time: " +  str(end)
 
 output = quad.toImage(quad.RootNode, mode = "smooth")
@@ -30,7 +31,7 @@ start = time.time()
 quad2 = qt.Quadtree(image,900,'Variance','quad')
 end = time.time()-start
 
-print "Compress: " +  str(quad2.nodecount()/float(image.shape[0]*image.shape[1]))  
+print "Compress: " +  str(quad2.nodecount()/float(image.shape[0]*image.shape[1]))
 print "Run time: " +  str(end)
 
 if quad2.toMatrix():
