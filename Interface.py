@@ -2,7 +2,6 @@ import QuadtreeChannels as qt
 import cv2 as cv
 import numpy as np
 import time
-import triangulation as trg
 import os
 
 from scipy.spatial import Delaunay
