@@ -1,6 +1,6 @@
 import QuadtreeChannels as qt
 #import Quadtree as qt
-import cv2 as cv 
+import cv2 as cv
 import numpy as np
 import time
 import triangulation as trg
@@ -11,7 +11,7 @@ from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
 
 
-#path variables that 
+#path variables that
 
 path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\SteeringWheel\raw\SteeringWheel_0001.jpg"
 #path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\TropicalFish\raw\TropicalFish_0021.jpg"
@@ -26,6 +26,7 @@ path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\SteeringWheel\raw\
 
 print path
 image = cv.imread(path)
+#imread pulls image data from the path and puts it into an easy to read array
 
 print image.shape
 #cv.imshow("Image",image)
@@ -34,11 +35,13 @@ print image.shape
 start = time.time()
 
 quad = qt.Quadtree(image,14,'Manhattan','quad')
+#building a quadtree from image(imagePath, threshold of interest, method of determining interest, kernel/shape of interest)
+
 end = time.time()-start
 
 print quad.nodecount(), end
 
-print quad.RootNode.Children[0].Parent
+# print quad.RootNode.Children[0].Parent
 
 output = quad.toImage(quad.RootNode, mode = "smooth")
 

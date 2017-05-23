@@ -1,5 +1,5 @@
 import QuadtreeChannels as qt
-import cv2 as cv 
+import cv2 as cv
 import numpy as np
 import time
 import networkx as nx
@@ -19,7 +19,7 @@ start = time.time()
 quad = qt.Quadtree(image,12,'Manhattan','quad')
 end = time.time()-start
 
-print "Compress: " +  str(quad.nodecount()/float(image.shape[0]*image.shape[1])) 
+print "Compress: " +  str(quad.nodecount()/float(image.shape[0]*image.shape[1]))
 print "Run time: " +  str(end)
 
 output = quad.toImage(quad.RootNode, mode = "smooth")
@@ -28,7 +28,7 @@ start = time.time()
 quad2 = qt.Quadtree(image,600,'Variance','quad')
 end = time.time()-start
 
-print "Compress: " +  str(quad2.nodecount()/float(image.shape[0]*image.shape[1]))  
+print "Compress: " +  str(quad2.nodecount()/float(image.shape[0]*image.shape[1]))
 print "Run time: " +  str(end)
 
 if quad2.toMatrix():
@@ -64,7 +64,7 @@ plt.show()
 def triangulation_to_CSRMatrix(points, simplices):
 	edges = 0
 	def distance(point_a, point_b):
-		
+
 		# find the euclidean distance between two points
 		# for our purposes we can leave them squared to preserve integersT
 		# and further penalize long lines
@@ -82,9 +82,9 @@ def triangulation_to_CSRMatrix(points, simplices):
 	weight_adjacency     = np.zeros((N,N))
 	unweighted_adjacency = np.zeros_like(weight_adjacency)
 
-	# iterate the triangulation and find all of the edges, fill in the adjacency matricies 
+	# iterate the triangulation and find all of the edges, fill in the adjacency matricies
 	for simplex in simplices:
-		# 
+		#
 		for i in xrange(len(simplex)):
 			a = i
 			b = (i+1)%3
@@ -97,7 +97,7 @@ def triangulation_to_CSRMatrix(points, simplices):
 			# make the matricies symmetric
 			weight_adjacency[simplex[a],simplex[b]] = length
 			#weight_adjacency[simplex[b],simplex[a]] = length
-			
+
 			unweighted_adjacency[simplex[a],simplex[b]] = 1
 			#unweighted_adjacency[simplex[b],simplex[a] = 1
 			edges += 1
@@ -108,7 +108,7 @@ def triangulation_to_urquhart(points, simplices):
 	edges = 0
 
 	def distance(point_a, point_b):
-		
+
 		# find the euclidean distance between two points
 		# for our purposes we can leave them squared to preserve integers
 		# and further penalize long lines
@@ -120,13 +120,13 @@ def triangulation_to_urquhart(points, simplices):
 
 		return distance
 
-	def min_angle(point_a, point_b, point_c):
-		angles = []
+	# def min_angle(point_a, point_b, point_c):
+	# 	angles = []
 
-		angles_a 
-		angles_b
+	# 	angles_a
+	# 	angles_b
 
-		return min(angles)
+	# 	return min(angles)
 
 	N = len(points)
 
@@ -134,9 +134,9 @@ def triangulation_to_urquhart(points, simplices):
 	weight_adjacency     = np.zeros((N,N))
 	unweighted_adjacency = np.zeros_like(weight_adjacency)
 
-	# iterate the triangulation and find all of the edges, fill in the adjacency matricies 
+	# iterate the triangulation and find all of the edges, fill in the adjacency matricies
 	for simplex in simplices:
-		
+
 		longest = 0
 		shortest = np.inf
 		shortest_index = 0
@@ -148,10 +148,10 @@ def triangulation_to_urquhart(points, simplices):
 		for i in xrange(len(simplex)):
 			a = i
 			b = (i+1)%3
-			
+
 			# compute the length between node_size
 			length = distance(points[simplex[a]], points[simplex[b]])
-			lengths.append(length)	
+			lengths.append(length)
 			#check if the node is the longest
 			if length > longest:
 				longest = length
@@ -167,15 +167,15 @@ def triangulation_to_urquhart(points, simplices):
 			"""
 			if lengths[j] < min_len:
 				min_len = lengths[j]
-			"""	
+			"""
 			# if it isn't the longest line add it to the adjacency matrix
-			
+
 			# not the longest
 			#if j != longest_index:
-			
+
 			# not the shortest
 			#if j != shortest_index:
-			
+
 			# not the middle
 			#if j == longest_index or j == shortest_index:
 
@@ -191,10 +191,10 @@ def triangulation_to_urquhart(points, simplices):
 				# make the matricies symmetric
 				weight_adjacency[simplex[a],simplex[b]] = lengths[j]
 				#weight_adjacency[simplex[b],simplex[a]] = length
-				
+
 				unweighted_adjacency[simplex[a],simplex[b]] = 1
 				#unweighted_adjacency[simplex[b],simplex[a] = 1
-				edges += 1 
+				edges += 1
 	print edges
 	return weight_adjacency, unweighted_adjacency
 """
