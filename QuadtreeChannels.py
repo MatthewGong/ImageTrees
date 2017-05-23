@@ -5,6 +5,7 @@ import cv2 as cv
 #Global variables
 BOX_SIZE  = 2
 DEPTH_LIMIT = 10
+#test at 7
 
 
 class Quadtree:
@@ -19,7 +20,7 @@ class Quadtree:
 			The image that the tree is decomposing
 
 		Count 	 :  int,
-			The number of leaf nodes in the tree, 
+			The number of leaf nodes in the tree,
 
 		Depth 	 :	int,
 			The number of layers in the tree
@@ -35,19 +36,19 @@ class Quadtree:
 
 		Opening	 :	NxM numpy array,
 			A sparsely populated array build from the toMatrix method()
-				built from running the Opening Morphological transformation 
+				built from running the Opening Morphological transformation
 				on self.Matrix
 
 		Partition:	String,
 			A way to distinguish which partition to use to build the tree
 
 
-	Method: 
+	Method:
 
 		Overview of the methods in the class.
 
 		detailed documentation provided below
-		
+
 		__init__ 	:  return None
 				Instantiate a tree based on a provided image
 
@@ -57,11 +58,11 @@ class Quadtree:
 		getPoints	: returns (N,2) numpy array of point coordinates
 				Recursively traverse the tree and collect all leaf nodes
 
-		toImage 	:  return NxM numpy array	
+		toImage 	:  return NxM numpy array
 				Rebuild the image representation of the tree
 
 
-	"""	
+	"""
 
 	RootNode 	= None
 	Grid 		= None
@@ -75,7 +76,7 @@ class Quadtree:
 
 	Partition 	= None
 
-	def __init__(self, grid,tol,mode,partition):
+	def __init__(self,grid,tol,mode,partition):
 
 		# The partitions are how we divide up the space and using a mixture of partitions
 		# or a naturally varying partition gives us more robust edge detection
@@ -89,34 +90,35 @@ class Quadtree:
 
 		#determine how large the image is
 		height, width, channels = grid.shape
+		#Channels are equal to depth
 
-		# starts with the whole image 
+		# starts with the whole image
 		self.RootNode = Node(None,0,0,height, width, grid, tol, 0, mode, partition)
 
 		# save the image for later use
 		self.Grid = grid
-		
+
 		self.Partition = partition
 
 		self.Matrix = np.zeros((height,width))
 
 		# add in the other three corners
-		self.Edges.append([width,  0])		
+		self.Edges.append([width,  0])
 		self.Edges.append([width, -height])
 		self.Edges.append([0, -height])
 
-		
+
 
 
 	#Create a sparse matrix from the nodes
 	def toMatrix(self,mode = "corners"):
 		"""
-		Builds a matrix representation from a Quadtree. 
+		Builds a matrix representation from a Quadtree.
 
 
 		Methods:
-			tree traversal, 
-				startin with the root node, recursively spider down the tree 
+			tree traversal,
+				startin with the root node, recursively spider down the tree
 				check if a node is terminal(leaf) and adding it to our matrix
 				otherwise check the nodes children
 
@@ -133,21 +135,21 @@ class Quadtree:
 
 				x, y, temp_h, temp_w, color = node.render()
 
-				h = temp_h/2 
-				w = temp_w/2 
-								
+				h = temp_h/2
+				w = temp_w/2
+
 				#if the node is in a sufficiently small region add it to the SET of edges
 				if h < 10 or w < 10:
 					self.Edges.append(node.pos())
 
 					if mode == 'corners':
 
-						left 	= x-w 
+						left 	= x-w
 						right 	= x+w
 						up 		= y-h
 						down 	= y+h
 
-						#prevents wrap around errors				
+						#prevents wrap around errors
 						if down >= height:
 							down = height-1
 
@@ -160,15 +162,15 @@ class Quadtree:
 						if right >= width:
 							right = width - 1
 
-						# upper left corner	
+						# upper left corner
 						self.Matrix[up:up+BOX_SIZE,left:left+BOX_SIZE] = 255
 
 						# uper right corner
 						self.Matrix[up:up+BOX_SIZE,right-BOX_SIZE:right] = 255
-						
+
 						# lower left corner
 						self.Matrix[down-BOX_SIZE:down,left:left+BOX_SIZE] = 255
-						
+
 						# lower right corner
 						self.Matrix[down-BOX_SIZE:down,right-BOX_SIZE:right] = 255
 
@@ -179,7 +181,7 @@ class Quadtree:
 
 				else:
 					self.Centers.append(node.pos())
-			
+
 			else:
 				for child in node.Children:
 					traverse_matrix(child)
@@ -198,7 +200,7 @@ class Quadtree:
 	def getPoints(self):
 		height, width = self.Matrix.shape
 		# create an edge mask using the corners of the boxes as little 2x2s
-	
+
 		points = []
 		def traverse_points(node):
 			# if the node is a leaf set the corners of its region to TRUE
@@ -238,9 +240,9 @@ class Quadtree:
 			if node.isleaf():
 				x, y, temp_h, temp_w, color = node.render()
 
-				h = temp_h/2 
-				w = temp_w/2 
-				
+				h = temp_h/2
+				w = temp_w/2
+
 				if mode != "boxes":
 					h += 2
 					w += 2
@@ -248,14 +250,14 @@ class Quadtree:
 					h += 1
 					w += 1
 
-				left 	= x-w 
+				left 	= x-w
 				right 	= x+w
 				up 		= y-h
 				down 	= y+h
 
 
 				#check that the boundaries are valid
-			
+
 				if down >= height:
 					down = height-1
 
@@ -272,14 +274,14 @@ class Quadtree:
 				for channel in range(channels):
 					image[up:down, left:right, channel] = color[channel]
 
-	
+
 			else:
 
 				for child in node.Children:
 					traverse_img(child,mode)
 
-	# Traverses the tree and fills in the image 
-	
+	# Traverses the tree and fills in the image
+
 		traverse_img(rootnode,mode)
 
 		return image
@@ -293,11 +295,11 @@ class Quadtree:
 				####print node
 			else:
 				#####print "ping"
-				
+
 				for child in node.Children:
 					traverse_count(child)
 
-		# traverses the tree and counts the number of leaves 		
+		# traverses the tree and counts the number of leaves
 		traverse_count(self.RootNode)
 		return self.Count
 
@@ -308,16 +310,16 @@ class Node:
 
 	Attributes:
 		Parent  :  Node,
-			The parent node 
+			The parent node
 
 		Children:  List of nodes,
 			Descendants of the node
 
 		X	 	:  int,
-			The x index of the node in the tree, 
-		
+			The x index of the node in the tree,
+
 		Y	 	:  int,
-			The y index of the nodes in the tree, 
+			The y index of the nodes in the tree,
 
 		Color 	: tuple,
 			The RGB values, but can be used with other color basis (CMYK etc)
@@ -330,19 +332,19 @@ class Node:
 
 		Grid     : 	NxM numpy arry,
 			The portion of the image that the node is decomposing
-		
+
 		Depth 	 :	int,
 			The depth of the node in the tree
 
 		Centers	 :	Set of nodes,
 			A subset of the nodes representing large areas of the tree
 
-	Method: 
+	Method:
 
 		Overview of the methods in the class.
 
 		detailed documentation provided below
-		
+
 		__init__ 	:  return None
 				Recursively split the node until the tree is built
 
@@ -359,7 +361,7 @@ class Node:
 				turns a node into a region of the image
 
 		procreate 	: 	return None
-				creates children of the current node. 
+				creates children of the current node.
 
 	"""
 
@@ -370,7 +372,7 @@ class Node:
 	Color    	= None	 	# defaults to None
 	Width    	= 0			# defaults to empty
 	Height	 	= 0			# defaults to empty
-	
+
 	Grid 		= None		# defaults to None
 	Depth 		= 0			# sets the current depth
 
@@ -410,13 +412,13 @@ class Node:
 			###print self.Grid[:w,:h,:].shape, self.X,self.Y
 			#cv.imshow("Image",self.Grid)
 			#cv.waitKey()
-			
+
 			#fill in the node color with the average
 			channels = Channels(grid)
 			self.Color = Average(channels)
 			self.Leaf = True
 			####print "leaf on the wind"
-			
+
 		else:
 
 			self.procreate(self.Width,self.Height,partition)
@@ -424,9 +426,9 @@ class Node:
 			#cv.waitKey()
 
 			# split into four child nodes
-			
+
 			# Upper left
-			
+
 	def pos(self):
 
 		return [self.X, -self.Y]
@@ -453,7 +455,7 @@ class Node:
 			width_R  = w
 			width_L  = width - w
 
-			return x, y, x_R, y_L, height_U, height_L, width_R, width_L 
+			return x, y, x_R, y_L, height_U, height_L, width_R, width_L
 
 		def golden(width,height):
 			h,w = self.Height/2 , self.Width/2
@@ -464,7 +466,7 @@ class Node:
 			width_R  = w
 			width_L  = width - w
 
-			return x, y, x_R, y_L, height_U, height_L, width_R, width_L 
+			return x, y, x_R, y_L, height_U, height_L, width_R, width_L
 
 		def shift_center(width,height):
 			h,w = self.Height/3 , self.Width/3
@@ -476,7 +478,7 @@ class Node:
 			width_R  = w
 			width_L  = width - w
 
-			return x, y, x_R, y_L, height_U, height_L, width_R, width_L 
+			return x, y, x_R, y_L, height_U, height_L, width_R, width_L
 
 
 		Partitions = {'quad' 		: quad(width,height),
@@ -492,13 +494,13 @@ class Node:
 
 		# Upper Left
 		self.Children.append(Node(self,x, y, height_U, width_R, self.Grid[:height_U,:width_R,:], self.tol, self.Depth+1,self.Mode,partition))
-		
+
 		# Upper right
 		self.Children.append(Node(self,x, y_L, height_U, width_L, self.Grid[height_U:,:width_L,:], self.tol, self.Depth+1,self.Mode,partition))
 
 		# Lower left
 		self.Children.append(Node(self,x_R, y, height_L, width_R, self.Grid[:height_L, width_R:, :], self.tol, self.Depth+1,self.Mode,partition))
-		
+
 		# Lower right
 		self.Children.append(Node(self,x_R, y_L, height_L, width_L,  self.Grid[height_L:, width_L:, :], self.tol, self.Depth+1,self.Mode,partition))
 
@@ -518,7 +520,7 @@ def Average(channels):
 	Inputs:
 
 			Channel	 : 	list of arrays,
-				flattened channels from a section of the grid 
+				flattened channels from a section of the grid
 
 	Outputs:
 
@@ -531,7 +533,7 @@ def Average(channels):
 	averages = []
 
 	for channel in channels:
-		averages.append(np.mean(channel)) 
+		averages.append(np.mean(channel))
 
 	return averages
 
@@ -542,25 +544,25 @@ def Manhattan(channels,area):
 	Inputs:
 
 		Channel	 : 	list of arrays,
-			flattened channels from a section of the grid 
+			flattened channels from a section of the grid
 
 		Area 	 : int,
 			The area of the region
 
 	Outputs:
-		
+
 		total_distance : float,
 			the distance normalized by the area
 
 	"""
 
 	#find the averages
-	averages = Average(channels)	
+	averages = Average(channels)
 
 	#find the  manhattan distance
 	# |x-xbar| + |y-ybar| + |z-zbar|
 	total_distance  = 0
- 
+
 
 	for channel in xrange(len(channels)):
 		total_distance += np.sum(abs(channels[channel]-averages[channel]))
@@ -571,18 +573,18 @@ def Manhattan(channels,area):
 
 def Variance(channels, area):
 	"""
-	Calculates the Manhattan metric of a given region
+	Calculates the Variance metric of a given region
 
 		Inputs:
 
 			Channel	 : 	list of arrays,
-				flattened channels from a section of the grid 
+				flattened channels from a section of the grid
 
 			Area 	 : int,
 				The area of the region
 
 		Outputs:
-			
+
 			variance : float,
 				the variance normalized by the area
 	"""
@@ -601,14 +603,14 @@ def Channels(grid):
 
 		Inputs:
 
-			
+
 			grid 	 : NxM numpy array,
 				The portion of the image to decompose
 
 		Outputs:
 
 			Channel	 : 	list of arrays,
-				flattened channels from a section of the grid 
+				flattened channels from a section of the grid
 
 	"""
 
@@ -625,19 +627,19 @@ def Channels(grid):
 
 def MeasureDetail(grid, mode = 'Manhattan' , split_tol = 1500, area = 1 ):
 	"""
-	
+
 		Determines whether the detail is sufficient to split the node
 
-		
+
 		Inputs:
 
-				grid 		:	array NxMxC, 
+				grid 		:	array NxMxC,
 					region of the image array NxMxC, C is the number of color data
-				
-				mode		:	string, 
+
+				mode		:	string,
 					chooses which splitting criterion we're using. Options are Manhattan, Variance, TBD...
-				
-				split_tol	:	float, 
+
+				split_tol	:	float,
 					determines how to split this varies wildly depending on the mode
 
 		Outputs:

@@ -1,5 +1,5 @@
 '''
-Simply display the contents of the webcam with optional mirroring using OpenCV 
+Simply display the contents of the webcam with optional mirroring using OpenCV
 via the new Pythonic cv2 interface.  Press <esc> to quit.
 '''
 
@@ -13,21 +13,23 @@ import time
 
 def show_webcam(mirror=False):
   	cam = cv2.VideoCapture(0)
-	
-	while True:	
+
+	while True:
 		start_all = time.time()
 
 		#start = time.time()
 		ret_val, img = cam.read()
-		#end = time.time() - start		
+		#end = time.time() - start
 		#print end, "image read"
 
-		start = time.time()		
+		start = time.time()
+		#python debugger; l to list, n to next-line, c to contine, ? for help.
+		import pdb; pdb.set_trace()
 		quad = qt.Quadtree(img, 800, 'Variance','quad')
 		end = time.time() - start
 		print end, "quad"
 
-	
+
 		"""
 		points = quad.getPoints()
 		tri = Delaunay(quad.Edges)
@@ -36,7 +38,7 @@ def show_webcam(mirror=False):
 
 		nx.draw(G_w, tri.points, node_size = 2)
 		plt.savefig("Graph.png", format="PNG")
-		
+
 		img = cv2.imread('Graph.png')
 		"""
 
@@ -53,12 +55,12 @@ def show_webcam(mirror=False):
 		img = quad.toImage(quad.RootNode, mode = "smooth")
 		end = time.time() - start
 		print end, "images"
-		
-		if mirror: 
+
+		if mirror:
 			img = cv2.flip(img, 1)
 
 		cv2.imshow('my webcam', img)
-		if cv2.waitKey(1) == 27: 
+		if cv2.waitKey(1) == 27:
 			break  # esc to quit
 
 		print time.time() - start_all, "total"
