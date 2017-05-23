@@ -1,5 +1,5 @@
 import numpy as np
-import segment as seg
+import jig
 import QuadtreeChannels as qt
 
 class Segmentation:
@@ -7,8 +7,8 @@ class Segmentation:
 
 	Attributes:
 
-		Segmentation :  Set of Segments,
-			set of segments(regions that represent things in frame) in the image
+		Segmentation :  Set of Jigs,
+			set of Jigs(regions that represent things in frame) in the image
 
 		Quadtree     : 	Quadtree of an image,
 			The decomposed image
@@ -22,6 +22,8 @@ class Segmentation:
 		Edges 		 : collection of Nodes,
 			The edges of the Quadtree
 
+		Locus 		 : collection of Coordinate pairs
+			The centers of the jigs
 
 	Methods:
 
@@ -40,4 +42,27 @@ class Segmentation:
 
 
 	"""
+
+
+	def __init__(self, image):
+		"""
+
+		Initializes a segmentation based on provided data 
+
+		"""
+
+		pass
+
+	def sortNodes(self, mode = "depth"):
+		"""
+		Sorts the nodes based on some mode
+
+
+		Inputs:
+			mode: string
+				determines which axis to sort the cores by.
+
+		Methods:
+
+		"""
 
