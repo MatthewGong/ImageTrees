@@ -141,7 +141,7 @@ class Quadtree:
 
 				#if the node is in a sufficiently small region add it to the SET of edges
 				if h < 10 or w < 10:
-					self.Edges.append(node.pos())
+					self.Edges.append(node)
 
 					if mode == 'corners':
 
@@ -181,7 +181,7 @@ class Quadtree:
 						self.Matrix[y-BOX_SIZE:y+BOX_SIZE,x-BOX_SIZE:x+BOX_SIZE] = 255
 
 				else:
-					self.Cores.append(node.pos())
+					self.Cores.append(node)
 
 			else:
 				for child in node.Children:
@@ -202,7 +202,8 @@ class Quadtree:
 		height, width = self.Matrix.shape
 		# create an edge mask using the corners of the boxes as little 2x2s
 
-		points = []
+		core_points = []
+		edge_points = []
 		def traverse_points(node):
 			# if the node is a leaf set the corners of its region to TRUE
 			if node.isleaf():
@@ -212,12 +213,12 @@ class Quadtree:
 				h = temp_h /2.
 				w = temp_w / 2.
 				if h < 10 or w < 10:
-					self.Edges.append(node.pos())
+					self.Edges.append(node)
+					edge_points.append([x,-y])
 				else:
-					self.Cores.append(node.pos())
+					self.Cores.append(node)
+					core_points.append([x,-y])
 
-
-				points.append([x,-y])
 
 			else:
 				for child in node.Children:
@@ -225,6 +226,8 @@ class Quadtree:
 
 
 		traverse_points(self.RootNode)
+
+		points = edge_points + core_points
 
 		return np.array(points)
 

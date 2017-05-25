@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 
 path = os.path.join(os.path.abspath(os.curdir),"images/SteeringWheel_raw.jpg")#pass in an image
-
+	
 
 image = cv.imread(path)
 
