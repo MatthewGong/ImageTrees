@@ -23,11 +23,10 @@ def show_webcam(mirror=False):
 		#print end, "image read"
 
 		start = time.time()
-		#python debugger; l to list, n to next-line, c to contine, ? for help.
-		import pdb; pdb.set_trace()
 		quad = qt.Quadtree(img, 800, 'Variance','quad')
 		end = time.time() - start
 		print end, "quad"
+
 
 
 		"""
@@ -43,7 +42,7 @@ def show_webcam(mirror=False):
 		"""
 
 
-		"""
+		
 		start = time.time()
 		if quad.toMatrix(mode = 'corners'):
 			img = quad.Matrix
@@ -55,6 +54,7 @@ def show_webcam(mirror=False):
 		img = quad.toImage(quad.RootNode, mode = "smooth")
 		end = time.time() - start
 		print end, "images"
+		"""
 
 		if mirror:
 			img = cv2.flip(img, 1)

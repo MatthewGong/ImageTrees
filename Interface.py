@@ -4,6 +4,8 @@ import numpy as np
 import time
 import os
 
+import segmentation as seg
+
 from scipy.spatial import Delaunay
 from scipy.spatial import Voronoi, voronoi_plot_2d
 from scipy.spatial import ConvexHull
@@ -16,7 +18,7 @@ path = os.path.join(os.path.abspath(os.curdir),"images/SteeringWheel_raw.jpg")#p
 
 image = cv.imread(path)
 
-
+"""
 start = time.time()
 quad = qt.Quadtree(image,14,'Manhattan','quad')
 end = time.time()-start
@@ -63,7 +65,7 @@ plt.show()
 
 
 print tri2.simplices.size
-"""
+
 start = time.time()
 quad3 = qt.Quadtree(image,16,'Manhattan','shift_center')
 end = time.time()-start
@@ -75,6 +77,22 @@ output = quad3.toimage(quad3.RootNode, mode = "smooth")
 #cv.imshow("Image",output)
 cv.imwrite("output3.jpg",output)
 """
+
+testViewer = seg.Segmentation(image,14,'Manhattan','quad')
+
+testPics = testViewer.displaySegments()
+
+#print len(testPics)
+fs = np.zeros_like(testPics[0])
+
+for pic in testPics:
+	fs += pic
+	#plt.imshow(pic)
+	#plt.show()
+
+plt.imshow(fs, cmap='hsv')
+plt.show()
+
 
 
 

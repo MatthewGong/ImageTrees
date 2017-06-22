@@ -71,7 +71,7 @@ class Quadtree:
 	Depth 		= 0
 
 	Cores		= []
-	Edges		= [[0,0]] #starts with the corners included
+	Edges		= [] #starts with the corners included
 	Matrix 		= []
 	Opening 	= None
 
@@ -104,9 +104,9 @@ class Quadtree:
 		self.Matrix = np.zeros((height,width))
 
 		# add in the other three corners
-		self.Edges.append([width,  0])
-		self.Edges.append([width, -height])
-		self.Edges.append([0, -height])
+		#self.Edges.append([width,  0])
+		#self.Edges.append([width, -height])
+		#self.Edges.append([0, -height])
 
 
 
@@ -227,7 +227,7 @@ class Quadtree:
 
 		traverse_points(self.RootNode)
 
-		points = edge_points + core_points
+		points = core_points + edge_points 
 
 		return np.array(points)
 
