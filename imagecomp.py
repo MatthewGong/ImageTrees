@@ -4,9 +4,11 @@ import cv2 as cv
 import numpy as np
 import time
 import triangulation as trg
+import treeNode as tn
 from scipy.spatial import Delaunay
 from scipy.spatial import Voronoi, voronoi_plot_2d
 from scipy.spatial import ConvexHull
+
 
 import matplotlib.pyplot as plt
 
@@ -78,7 +80,9 @@ plt.plot(points[:,0], points[:,1], 'o')
 plt.show()
 
 
-points2 = np.array(quad2.Edges)
+print quad2.Edges
+points2 = np.array([edge.pos() for edge in quad2.Edges])
+
 print tri.simplices.copy()
 
 tri2 = Delaunay(points2)
@@ -97,8 +101,8 @@ voronoi_plot_2d(vor)
 plt.show()
 
 
-pointsa = np.array(quad2.Centers)
-print 'check point pwwer'
+pointsa = np.array([core.pos() for core in quad2.Cores])
+
 
 vor2 = Voronoi(pointsa)
 print 'checkpoint 2342'

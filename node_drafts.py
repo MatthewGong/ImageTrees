@@ -10,7 +10,7 @@ from scipy.spatial import Voronoi, voronoi_plot_2d
 from scipy.sparse.csgraph import minimum_spanning_tree
 
 import matplotlib.pyplot as plt
-#"""
+"""
 path = r"C:\Users\Matth\Documents\seniorcoding\Project\Videos\SteeringWheel\raw\SteeringWheel_0001.jpg"#pass in an image
 image = cv.imread(path)
 
@@ -48,7 +48,7 @@ plt.title('Delanauy Triangulation')
 plt.show()
 
 
-points2 = np.array(quad2.Edges)
+points2 = np.array([ edge.pos() for edge in quad2.Edges])
 
 
 tri2 = Delaunay(points2)
@@ -60,7 +60,7 @@ plt.title('Refined Delanauy Triangulation')
 plt.show()
 
 
-#"""
+"""
 def triangulation_to_CSRMatrix(points, simplices):
 	edges = 0
 	def distance(point_a, point_b):
@@ -101,8 +101,9 @@ def triangulation_to_CSRMatrix(points, simplices):
 			unweighted_adjacency[simplex[a],simplex[b]] = 1
 			#unweighted_adjacency[simplex[b],simplex[a] = 1
 			edges += 1
-	print edges
-	return weight_adjacency, unweighted_adjacency
+	#print edges
+
+	return weight_adjacency, unweighted_adjacency, 
 
 def triangulation_to_urquhart(points, simplices):
 	edges = 0
@@ -197,7 +198,7 @@ def triangulation_to_urquhart(points, simplices):
 				edges += 1
 	print edges
 	return weight_adjacency, unweighted_adjacency
-#"""
+"""
 
 start = time.time()
 weighted, unweighted = triangulation_to_CSRMatrix(tri2.points, tri2.simplices)
@@ -242,5 +243,6 @@ plt.title('Min from urquhart')
 min_graph = nx.from_numpy_matrix(minimal2.toarray().astype(int))
 nx.draw(min_graph, tri2.points, node_size = 2)
 plt.show()
+"""
 """
 """

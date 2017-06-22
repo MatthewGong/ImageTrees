@@ -108,7 +108,7 @@ class Node:
 
 			self.procreate(self.Width, self.Height, partition)
 
-		elif MeasureDetail(self.Grid, mode, split_tol = tol, area = height*width) or (self.Width <= 15) or (self.Height <= 15) or (self.Depth > DEPTH_LIMIT):
+		elif MeasureDetail(self.Grid, mode, split_tol = tol, area = height*width) or (self.Width <= 8) or (self.Height <= 8) or (self.Depth > DEPTH_LIMIT):
 
 			###print self.Grid[:w,:h,:].shape, self.X,self.Y
 			#cv.imshow("Image",self.Grid)

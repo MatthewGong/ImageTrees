@@ -3,7 +3,6 @@ import treeNode as Node
 
 class jig:
 	"""
-
 	Attributes:
 
 		Cores : set of Nodes,
@@ -37,15 +36,14 @@ class jig:
 
 	"""
 
-	Cores 	= None
-	Edges 	= None
-
-	Locus 	= [0 , 0]
-	Color 	= None 
-
 	def __init__(self, ):
 
-		pass
+		self.Cores_Nodes 	= []
+		self.Edges_Nodes 	= []
+
+		self.Locus 	= [0 , 0]
+		self.Color 	= None 
+
 
 	def updateColor(self):
 		"""		
@@ -59,8 +57,6 @@ class jig:
 		Methods:
 
 		"""
-
-
 		pass
 
 	def setLocus(self, mode="weighted"):
@@ -82,3 +78,84 @@ class jig:
 
 
 		pass
+
+	def display(self, size, color):
+		"""
+
+		prints out the jig based on the 
+		
+		Inputs:
+
+			None
+
+		Methods:
+
+		"""
+		image = np.zeros(size[0:2])
+		height, width, channels = size
+
+		for node in self.Cores_Nodes:
+			x, y, temp_h, temp_w, tempcolor = node.render()
+
+			h = temp_h/2 + 1
+			w = temp_w/2 + 1
+
+			
+			left 	= x-w
+			right 	= x+w
+			up 		= y-h
+			down 	= y+h
+
+
+			#check that the boundaries are valid
+
+			if down >= height:
+				down = height-1
+
+			if up < 0:
+				up   = 0
+
+			if left < 0:
+				left = 0
+
+			if right >= width:
+				right = width - 1
+
+			#set the region equal to it's components
+			#for channel in range(channels):
+			#	image[up:down, left:right, channel] = color[channel]
+			image[up:down, left:right] = color
+
+
+		for node in self.Edges_Nodes:
+			x, y, temp_h, temp_w, tempcolor = node.render()
+
+			h = temp_h/2 + 1
+			w = temp_w/2 + 1
+			left 	= x-w
+			right 	= x+w
+			up 		= y-h
+			down 	= y+h
+
+
+			#check that the boundaries are valid
+
+			if down >= height:
+				down = height-1
+
+			if up < 0:
+				up   = 0
+
+			if left < 0:
+				left = 0
+
+			if right >= width:
+				right = width - 1
+
+			#set the region equal to it's components
+			#for channel in range(channels):
+			#	image[up:down, left:right, channel] = color[channel]
+			image[up:down, left:right] = color
+
+
+		return image

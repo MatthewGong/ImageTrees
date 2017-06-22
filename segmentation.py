@@ -5,6 +5,9 @@ import node_drafts as nd
 
 from scipy.spatial import Delaunay
 
+GREATER_THRESHOLD = 60
+NUM_SKIPPED = 0
+
 
 class Segmentation:
 	"""
@@ -85,13 +88,20 @@ class Segmentation:
 		self.Edges = self.Quadtree.Edges
 		self.Cores = self.Quadtree.Cores
 
+		self.Nodes = self.Cores + self.Edges
+
 
 		# build the CSR Matrix from the triangualtion
-		triangualtion = Delaunay(points)
+		triangulation = Delaunay(points)
 
-		self.Adjacency, unweighted, self.IDs = nd.triangualtion_to_CSRMAtrix(triangulation.points, triangualtion.simplicies)
+		self.Adjacency, unweighted = nd.triangulation_to_CSRMatrix(triangulation.points, triangulation.simplices)
+
+
+		self.IDs = range(0,len(points))
 
 		# Locuses will be build later
+
+		self.modifiedBFS()
 
 
 	def sortNodes(self, mode = "depth"):
@@ -116,11 +126,109 @@ class Segmentation:
 
 		proto_list = [core.Depth for core in self.Cores]
 
-		ordering = zip(proto_list,self.IDs[0,len(self.Cores)])
+		ordering = zip(proto_list,self.IDs[0:len(self.Cores)])
 
-		ordering.sort(keys = lambda x : x[0])
-		print ordering
+		ordering.sort(key = lambda x : x[0])
 
+
+		return ordering
+
+	def build_jig(self, jig, origin_nodeID, current_nodeID,visited):
+		#print len(jig.Cores_Nodes)
+
+		def compareNode(current_nodeID, origin_nodeID):
+			"""
+
+			checks if the nodes are "similar" enough
+
+			inputs:
+
+				*_nodeID : the id's of the nodes we want to compare
+
+			return 
+
+				boolean, are they similar enough
+			"""
+			current_node, origin_node = self.Cores[current_nodeID], self.Cores[origin_nodeID]
+
+			color_current, color_origin =  current_node.Color, origin_node.Color
+
+			distance = 0
+
+			for color in xrange(len(color_current)):
+				distance += (color_current[color] - color_origin[color]) **2
+
+			if (distance)**.5 > GREATER_THRESHOLD:
+				return False
+			else:
+				return True 
+
+
+
+		#Make sure Node has not been visited
+		if visited[current_nodeID] == 0:
+			
+			current_node = self.Nodes[current_nodeID]#properly assign node from an ID 
+
+			#If it's an Edge we add it
+			if current_node in self.Edges: #and current_node not in jig.Edges_Nodes:
+				
+				#make sure we don't add the same edge repeatedly
+				if current_node not in jig.Edges_Nodes:
+					jig.Edges_Nodes.append(current_node)
+
+			#If it's a Core make sure it's similar enough, 
+			elif current_node in self.Cores:
+
+				#Check if this is a new jig
+
+				# check
+				if origin_nodeID is not None:
+				#print current_nodeID, "boof"
+				# If the node is similar enough add it to visited, and the Jig and recurse
+					if compareNode(origin_nodeID, current_nodeID):
+						visited[current_nodeID] = 1
+						jig.Cores_Nodes.append(current_node)
+
+						# find each node connected to the current_node
+						indices = np.nonzero(self.Adjacency[current_nodeID])[0]
+
+						# find the neighbors and recurse through them
+						for index in indices:
+							self.build_jig(jig, current_nodeID, index, visited)
+
+					else:
+
+						pass
+
+				#If it is new, add the Core then find neighbors
+				else:
+
+					# add the node to the jig
+					jig.Cores_Nodes.append(current_node)
+
+					# mark the node as visited
+					visited[current_nodeID] = 1
+					
+					# find the neighboring nodes
+					indices = np.nonzero(self.Adjacency[current_nodeID])[0]
+					#print indices[0]
+					# find the neighbors and recurse through them
+					
+					for index in indices:
+						#print index
+						self.build_jig(jig, current_nodeID, index,visited)
+
+			else:
+				raise ValueError("What the h3ll did you do man")
+		
+
+		#Skip it
+		elif visited[current_nodeID] == 1:
+			pass	
+		else:
+			#print visited[current_nodeID] , "da fu"
+			raise ValueError("What the h3ll did you do man?")			
 
 	def modifiedBFS(self):
 		"""
@@ -135,73 +243,49 @@ class Segmentation:
 
 		"""
 
-		#self.IDs
-		ordered = sortNodes()
-		visited = np.zeros_like(ordered)
-		cnt = 0
+		ordered = self.sortNodes()
+		visited = np.zeros(len(self.Nodes))
+		countID = 0
 
-		def build_jig(self, jig, origin_nodeID, current_nodeID):
-
-			def compareNode(current_nodeID, origin_nodeID):
-
+		
+		while countID < len(ordered):
+			#print countID
 			
+			#print visited
+			if visited[countID] == 0:
 
-			#Make sure Node has not been visited
-			if visited[cnt] == 0:
-			
-				current_node = #properly assign node from an ID 
-
-
-				#If it's an Edge we add it
-				if current_node is in self.Edges:
-					jig.Edges.append(current_nodeID)
-
-
-				#If it's a Core make sure it's similar enough, 
-				elif current_node is in self.Cores:
-
-
-					#Check if this is a new jig
-
-					# check
-					if origin_nodeID is not None:
-						compareNode(origin_nodeID, current_nodeID)
-
-
-					#If it is new, add the Core then find neighbors
-					else:
-
-						# add the node to the jig
-						jig.Cores.append(current_nodeID)
-						visited[current_nodeID] = 1
-						indices = npy.nonzero(self.Adjacency[current_nodeID])
-
-						# find the neighbors and recurse through them
-						for index in indices:
-							build_jig(jig, current_nodeID,index)
-
-				else
-					raise ValueError("What the h3ll did you do man")
-			
-
-			#Skip it
-			elif visited[cnt] == 1:
-				pass
-			else:
-				raise ValueError("What the h3ll did you do man?")			
-
-		while cnt < len(visited):
-
-			if visited[cnt] == 0:
 				temp_jig = jig.jig()
-				build_jig(temp_jig, None, ordered[cnt])
-				self.Segmentation.append(temp)				
-			elif visited[cnt] == 1:
-				cnt += 1
+				self.build_jig(temp_jig, None, ordered[countID][1],visited)
+				if len(temp_jig.Cores_Nodes) > 0:
+					self.Segmentation.append(temp_jig)	
+
+
+
+				countID += 1
+
+			elif visited[countID] == 1:
+				
+				countID += 1
+
 			else:
 				raise ValueError("What the h3ll did you do man?")		
+	
+	def displaySegments(self):
+
+		shape = self.Image.shape
+		print len(self.Segmentation), " segments found"
+
+		toDisplay = []
+
+		for jig in self.Segmentation:
+			tempColor = np.random.randint(0,100)#counter #(counter,counter,counter)
+			pic = jig.display(shape,tempColor)
+			toDisplay.append(pic)		
 			
 
+
+
+		return toDisplay
 
 
 
