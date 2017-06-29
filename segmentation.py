@@ -5,7 +5,7 @@ import node_drafts as nd
 
 from scipy.spatial import Delaunay
 
-GREATER_THRESHOLD = 60
+GREATER_THRESHOLD = 90
 NUM_SKIPPED = 0
 
 
