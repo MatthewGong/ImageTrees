@@ -42,7 +42,7 @@ def show_webcam(mirror=False):
 		"""
 
 
-		
+		"""
 		start = time.time()
 		if quad.toMatrix(mode = 'corners'):
 			img = quad.Matrix
@@ -54,7 +54,7 @@ def show_webcam(mirror=False):
 		img = quad.toImage(quad.RootNode, mode = "smooth")
 		end = time.time() - start
 		print end, "images"
-		"""
+		
 
 		if mirror:
 			img = cv2.flip(img, 1)

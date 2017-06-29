@@ -82,17 +82,17 @@ testViewer = seg.Segmentation(image,14,'Manhattan','quad')
 
 testPics = testViewer.displaySegments()
 
+
 #print len(testPics)
 fs = np.zeros_like(testPics[0])
 
 for pic in testPics:
 	fs += pic
 	#plt.imshow(pic)
+
 	#plt.show()
 
-plt.imshow(fs, cmap='hsv')
+
+plt.imshow(fs, cmap='nipy_spectral')
 plt.show()
-
-
-
 
