@@ -3,6 +3,7 @@ import jig
 import QuadtreeChannels as qt
 import node_drafts as nd
 
+from matplotlib import pyplot as plt
 from scipy.spatial import Delaunay
 
 GREATER_THRESHOLD = 90
@@ -52,19 +53,20 @@ class Segmentation:
 
 
 	"""
-
+	"""
 	Segmentation = []
 	Quadtree 	 = None
 	Image 		 = None
 
 	Adjacency 	 = None
+	Triangulation = None
 	Cores 		 = {}
 	Edges 		 = {}
 	Locus		 = []
 	IDs 		 = []
 
 	Unclaimed 	 = []
-
+	"""
 
 	def __init__(self, image, tol, mode, partition):
 		"""
@@ -72,6 +74,7 @@ class Segmentation:
 		Initializes a segmentation based on provided data 
 
 		"""
+		self.Segmentation = []
 		# store image
 		self.Image = image
 
@@ -81,7 +84,7 @@ class Segmentation:
 
 
 		# build the cores and edges from the quadtree
-		points = self.Quadtree.getPoints()
+		self.Points = self.Quadtree.getPoints()
 
 		#self.Unclaimed = set(points)
 
@@ -94,16 +97,30 @@ class Segmentation:
 
 
 		# build the CSR Matrix from the triangualtion
-		triangulation = Delaunay(points)
-
-		self.Adjacency, unweighted = nd.triangulation_to_CSRMatrix(triangulation.points, triangulation.simplices)
+		self.Triangulation = Delaunay(self.Points)
 
 
-		self.IDs = range(0,len(points))
+
+		self.Adjacency, unweighted = nd.triangulation_to_CSRMatrix(self.Triangulation.points, self.Triangulation.simplices)
+
+		print len(self.Points), self.Adjacency.shape
+
+
+		self.IDs = range(0,len(self.Points))
 
 		# Locuses will be build later
 
 		self.modifiedBFS()
+
+	def saveNetwork(self, name):
+
+		plt.triplot(self.Points[:,0], self.Points[:,1], self.Triangulation.simplices.copy())
+		plt.plot(self.Points[:,0], self.Points[:,1], 'o')
+		plt.ylim(-1080,0)
+		plt.xlim(0,1920)
+		plt.title('Delanauy Triangulation')
+		plt.savefig(name)
+		plt.clf()
 
 
 	def sortNodes(self, mode = "depth"):
@@ -279,7 +296,7 @@ class Segmentation:
 
 		shape = self.Image.shape
 		print len(self.Segmentation), " segments found"
-		tempColors = [66, 6, 180, 138, 192, 228, 48, 120, 110, 126, 0, 204, 90, 216, 156, 198, 36, 24, 102, 60, 162, 186, 42, 234, 210, 144, 150, 132, 240, 30, 252, 168, 18, 174, 12, 78, 108, 222, 246, 84, 54, 96, 72]
+		tempColors = [60, 18, 39, 69, 48, 54, 15, 3, 84, 42, 33, 78, 12, 87, 6, 63, 30, 36, 9, 93, 81, 24, 72, 99, 57, 96, 27, 0, 51, 45, 66, 21, 75, 90]
 
 		# flattened array
 		image = np.zeros(self.Image.shape[0:2])
