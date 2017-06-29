@@ -1,0 +1,4 @@
+import numpy as np
+
+
+tempColor = np.random.randint(0,100, 50)
