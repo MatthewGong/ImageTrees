@@ -98,7 +98,7 @@ class jig:
 		for node in self.Cores_Nodes:
 			x, y, temp_h, temp_w, tempcolor = node.render()
 
-			h = temp_h/2 + 1
+			h = temp_h/2 + 2
 			w = temp_w/2 + 1
 
 			

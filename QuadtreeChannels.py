@@ -65,18 +65,6 @@ class Quadtree:
 
 	"""
 
-	RootNode 	= None
-	Grid 		= None
-	Count 		= 0
-	Depth 		= 0
-
-	Cores		= []
-	Edges		= [] #starts with the corners included
-	Matrix 		= []
-	Opening 	= None
-
-	Partition 	= None
-
 	def __init__(self,grid,tol,mode,partition):
 
 		# The partitions are how we divide up the space and using a mixture of partitions
@@ -107,6 +95,10 @@ class Quadtree:
 		#self.Edges.append([width,  0])
 		#self.Edges.append([width, -height])
 		#self.Edges.append([0, -height])
+		self.Cores		= []
+		self.Edges		= [] #starts with the corners included
+
+		self.Count = 0
 
 
 
@@ -234,7 +226,7 @@ class Quadtree:
 
 
 	# Display the image of the compressed tree
-	def toImage(self,rootnode, mode = "boxes"):
+	def toImage(self, mode = "boxes"):
 
 		image = np.zeros_like(self.Grid)
 		height, width, channels = image.shape
@@ -286,7 +278,7 @@ class Quadtree:
 
 	# Traverses the tree and fills in the image
 
-		traverse_img(rootnode,mode)
+		traverse_img(self.RootNode,mode)
 
 		return image
 
