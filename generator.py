@@ -49,6 +49,12 @@ path = os.path.join(os.path.abspath(os.curdir),"images/SteeringWheel_raw.jpg")#p
 origin = os.curdir
 cwd = raw_input("What directory do you want to process? yes, the whole path name \n")
 
+
+tol = raw_input("What tolerance do you want to use? d defaults to 16 \n")
+
+if tol == "d";
+	tol = 16;
+
 # kindly do not put the training image set in the repo since space is limited
 
 print cwd
@@ -79,6 +85,6 @@ else:
 
 
 
-image_segmentation(cwd,cwd)
+image_segmentation(cwd,cwd, tolerance = tol)
 
 os.chdir(origin)
