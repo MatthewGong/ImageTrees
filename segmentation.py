@@ -90,6 +90,8 @@ class Segmentation:
 
 		self.Nodes = self.Cores + self.Edges
 
+		self.Visited = np.zeros_like(self.Nodes)
+
 
 		# build the CSR Matrix from the triangualtion
 		triangulation = Delaunay(points)
@@ -133,7 +135,7 @@ class Segmentation:
 
 		return ordering
 
-	def build_jig(self, jig, origin_nodeID, current_nodeID,visited):
+	def build_jig(self, jig, origin_nodeID, current_nodeID):
 		#print len(jig.Cores_Nodes)
 
 		def compareNode(current_nodeID, origin_nodeID):
@@ -166,7 +168,7 @@ class Segmentation:
 
 
 		#Make sure Node has not been visited
-		if visited[current_nodeID] == 0:
+		if self.Visited[current_nodeID] == 0:
 			
 			current_node = self.Nodes[current_nodeID]#properly assign node from an ID 
 
@@ -176,6 +178,9 @@ class Segmentation:
 				#make sure we don't add the same edge repeatedly
 				if current_node not in jig.Edges_Nodes:
 					jig.Edges_Nodes.append(current_node)
+
+					# set the edge as visited
+					self.Visited[current_nodeID] = 1
 
 			#If it's a Core make sure it's similar enough, 
 			elif current_node in self.Cores:
@@ -187,7 +192,7 @@ class Segmentation:
 				#print current_nodeID, "boof"
 				# If the node is similar enough add it to visited, and the Jig and recurse
 					if compareNode(origin_nodeID, current_nodeID):
-						visited[current_nodeID] = 1
+						self.Visited[current_nodeID] = 1
 						jig.Cores_Nodes.append(current_node)
 
 						# find each node connected to the current_node
@@ -195,7 +200,7 @@ class Segmentation:
 
 						# find the neighbors and recurse through them
 						for index in indices:
-							self.build_jig(jig, current_nodeID, index, visited)
+							self.build_jig(jig, current_nodeID, index)
 
 					else:
 
@@ -208,7 +213,7 @@ class Segmentation:
 					jig.Cores_Nodes.append(current_node)
 
 					# mark the node as visited
-					visited[current_nodeID] = 1
+					self.Visited[current_nodeID] = 1
 					
 					# find the neighboring nodes
 					indices = np.nonzero(self.Adjacency[current_nodeID])[0]
@@ -217,14 +222,14 @@ class Segmentation:
 					
 					for index in indices:
 						#print index
-						self.build_jig(jig, current_nodeID, index,visited)
+						self.build_jig(jig, current_nodeID, index)
 
 			else:
 				raise ValueError("What the h3ll did you do man")
 		
 
 		#Skip it
-		elif visited[current_nodeID] == 1:
+		elif self.Visited[current_nodeID] == 1:
 			pass	
 		else:
 			#print visited[current_nodeID] , "da fu"
@@ -244,7 +249,6 @@ class Segmentation:
 		"""
 
 		ordered = self.sortNodes()
-		visited = np.zeros(len(self.Nodes))
 		countID = 0
 
 		
@@ -252,10 +256,11 @@ class Segmentation:
 			#print countID
 			
 			#print visited
-			if visited[countID] == 0:
+			if self.Visited[countID] == 0:
 
 				temp_jig = jig.jig()
-				self.build_jig(temp_jig, None, ordered[countID][1],visited)
+				self.build_jig(temp_jig, None, ordered[countID][1])
+				
 				if len(temp_jig.Cores_Nodes) > 0:
 					self.Segmentation.append(temp_jig)	
 
@@ -263,7 +268,7 @@ class Segmentation:
 
 				countID += 1
 
-			elif visited[countID] == 1:
+			elif self.Visited[countID] == 1:
 				
 				countID += 1
 
@@ -274,19 +279,18 @@ class Segmentation:
 
 		shape = self.Image.shape
 		print len(self.Segmentation), " segments found"
+		tempColors = [66, 6, 180, 138, 192, 228, 48, 120, 110, 126, 0, 204, 90, 216, 156, 198, 36, 24, 102, 60, 162, 186, 42, 234, 210, 144, 150, 132, 240, 30, 252, 168, 18, 174, 12, 78, 108, 222, 246, 84, 54, 96, 72]
 
-		toDisplay = []
+		# flattened array
+		image = np.zeros(self.Image.shape[0:2])
+		counter = 0
 
 		for jig in self.Segmentation:
-			tempColor = np.random.randint(0,100)#counter #(counter,counter,counter)
-			pic = jig.display(shape,tempColor)
-			toDisplay.append(pic)		
-			
+			#tempColor = np.random.randint(0,100) #counter #(counter,counter,counter)
+			tempColor = tempColors[counter]
+			jig.display(shape,tempColor,image)
+			counter += 1
 
 
-
-		return toDisplay
-
-
-
+		return image
 

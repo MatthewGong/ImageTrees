@@ -79,7 +79,7 @@ class jig:
 
 		pass
 
-	def display(self, size, color):
+	def display(self, size, color,image):
 		"""
 
 		prints out the jig based on the 
@@ -91,9 +91,10 @@ class jig:
 		Methods:
 
 		"""
-		image = np.zeros(size[0:2])
 		height, width, channels = size
 
+		print "I'm working on an image"
+		
 		for node in self.Cores_Nodes:
 			x, y, temp_h, temp_w, tempcolor = node.render()
 
