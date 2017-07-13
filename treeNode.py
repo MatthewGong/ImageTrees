@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 #Global variables
 BOX_SIZE  = 2
 DEPTH_LIMIT = 10
@@ -64,7 +64,7 @@ class Node:
 		procreate 	: 	return None
 				creates children of the current node.
 
-	"""
+	
 
 	Parent   	= None
 	Children 	= None   	# defaults to bachelor/spinster
@@ -76,6 +76,7 @@ class Node:
 
 	Grid 		= None		# defaults to None
 	Depth 		= 0			# sets the current depth
+	"""
 
 	def __init__(self,parent,x,y,height,width,grid,tol, depth, mode, partition):
 		"""
@@ -85,17 +86,17 @@ class Node:
 		self.Parent = parent
 
 		# variables to shift the center to the middle of the block and not the corner
-		h = height/2
-		w = width/2
 
-		self.X 			= x + w
-		self.Y 			= y + h
-
+		self.X 			= x 
+		self.Y 			= y 
+		
+		#print self.X, self.Y
 
 		self.Width 		= width
 		self.Height 	= height
-		self.Grid  		= np.copy(grid)
 
+#		self.Grid  		= np.copy(grid)
+		self.Grid  		= grid
 		self.Depth 		= depth
 		self.Leaf 		= False
 
@@ -104,9 +105,9 @@ class Node:
 
 		# If the subgrid is above the tolerance then split it into subgrids
 		# Assume the tree will always split on the first NUMBER of iterations
-		if self.Depth < 3:
+		if self.Depth < 2:
 
-			self.procreate(self.Width, self.Height, partition)
+			self.procreate( self.Height, self.Width, partition)
 
 		elif MeasureDetail(self.Grid, mode, split_tol = tol, area = height*width) or (self.Width <= 8) or (self.Height <= 8) or (self.Depth > DEPTH_LIMIT):
 
@@ -115,24 +116,19 @@ class Node:
 			#cv.waitKey()
 
 			#fill in the node color with the average
-			channels = Channels(grid)
+			channels   = Channels(grid)
 			self.Color = Average(channels)
-			self.Leaf = True
-			####print "leaf on the wind"
+			self.Leaf  = True
+			
 
 		else:
 
-			self.procreate(self.Width,self.Height,partition)
-			#cv.imshow("Image",self.Grid)
-			#cv.waitKey()
-
-			# split into four child nodes
-
-			# Upper left
+			self.procreate(self.Height, self.Width, partition)
+			
 
 	def pos(self):
 
-		return [self.X, -self.Y]
+		return [self.X, self.Y]
 
 
 	def isleaf(self):
@@ -141,45 +137,89 @@ class Node:
 
 	# turns a node object into an image segment
 	def render(self):
+		
+		return  self.Y, self.X, self.Height, self.Width, self.Color
 
-		return self.X, self.Y, self.Height, self.Width, self.Color
-
-	def procreate(self, width, height, partition):
+	def procreate(self,  height, width, partition):
 
 		def quad(width,height):
-			h,w = self.Height/2 , self.Width/2
+			h, w = self.Height/2 , self.Width/2
+			#print w
+			x_UL = self.X
+			x_UR = self.X + w
+			x_LL = self.X
+			x_LR = self.X + w
+			
 
-			x , y    = self.X-w , self.Y-h
-			x_R, y_L = self.X, self.Y
-			height_U = h
-			height_L = height - h
-			width_R  = w
-			width_L  = width - w
+			y_UL = self.Y
+			y_UR = self.Y 
+			y_LL = self.Y + h
+			y_LR = self.Y + h
+			
+			width_UL = w
+			width_UR = width - w
+			width_LL = w
+			width_LR = width - w
 
-			return x, y, x_R, y_L, height_U, height_L, width_R, width_L
+			height_UL = h
+			height_UR = h
+			height_LL = height - h 
+			height_LR = height - h
+			
+			return x_UR, x_UL, x_LR, x_LL, y_UR, y_UL, y_LR, y_LL, width_UR, width_UL, width_LR, width_LL, height_UR, height_UL, height_LR, height_LL
 
 		def golden(width,height):
-			h,w = self.Height/2 , self.Width/2
-			x , y    = self.X-w , self.Y-h
-			x_R, y_L = self.X, self.Y
-			height_U = h
-			height_L = height - h
-			width_R  = w
-			width_L  = width - w
+			h, w = self.Height/2 , self.Width/2	
 
-			return x, y, x_R, y_L, height_U, height_L, width_R, width_L
+			x_UL = self.X
+			x_UR = self.X + w
+			x_LL = self.X
+			x_LR = self.X + w
+			
+
+			y_UL = self.Y
+			y_UR = self.Y 
+			y_LL = self.Y + h
+			y_LR = self.Y + h
+			
+			width_UR = width - w
+			width_UL = w
+			width_LR = width - w
+			width_LL = w
+
+			height_UL = h
+			height_UR = h
+			height_LL = height - h 
+			height_LR = height - h
+			
+			
+			return x_UR, x_UL, x_LR, x_LL, y_UR, y_UL, y_LR, y_LL, width_UR, width_UL, width_LR, width_LL, height_UR, height_UL, height_LR, height_LL
 
 		def shift_center(width,height):
-			h,w = self.Height/3 , self.Width/3
+			h, w = self.Height/3 , self.Width/3	
 
-			x , y    = self.X-w , self.Y-h
-			x_R, y_L = self.X, self.Y
-			height_U = h
-			height_L = height - h
-			width_R  = w
-			width_L  = width - w
+			x_UL = self.X
+			x_UR = self.X + w
+			x_LL = self.X
+			x_LR = self.X + w
+			
 
-			return x, y, x_R, y_L, height_U, height_L, width_R, width_L
+			y_UL = self.Y
+			y_UR = self.Y 
+			y_LL = self.Y + h
+			y_LR = self.Y + h
+			
+			width_UR = width - w
+			width_UL = w
+			width_LR = width - w
+			width_LL = w
+
+			height_UL = h
+			height_UR = h
+			height_LL = height - h 
+			height_LR = height - h
+						
+			return x_UR, x_UL, x_LR, x_LL, y_UR, y_UL, y_LR, y_LL, width_UR, width_UL, width_LR, width_LL, height_UR, height_UL, height_LR, height_LL
 
 
 		Partitions = {'quad' 		: quad(width,height),
@@ -191,19 +231,36 @@ class Node:
 		# make a holder for future children
 		self.Children = []
 
-		x , y, x_R, y_L, height_U, height_L, width_R, width_L = Partitions[partition]
-
+		x_UR, x_UL, x_LR, x_LL, y_UR, y_UL, y_LR, y_LL, width_UR, width_UL, width_LR, width_LL, height_UR, height_UL, height_LR, height_LL = Partitions[partition]
+		
+				
+		print x_UR, x_UL, x_LR, x_LL, y_UR, y_UL, y_LR, y_LL, width_UR, width_UL, width_LR, width_LL, height_UR, height_UL, height_LR, height_LL
+		"""
+		print "UL"
+		plt.imshow(self.Grid[:height_UL, :width_UL, :])
+		plt.show()
+		print "UR"
+		plt.imshow(self.Grid[:height_UR, width-width_UR:, :])
+		plt.show()
+		print "LL"
+		plt.imshow(self.Grid[height-height_LL:, :width_LL, :])
+		plt.show()
+		print "LR"
+		plt.imshow(self.Grid[height-height_LR:, width-width_UR:, :])
+		plt.show()
+		"""
+		
 		# Upper Left
-		self.Children.append(Node(self,x, y, height_U, width_R, self.Grid[:height_U,:width_R,:], self.tol, self.Depth+1,self.Mode,partition))
+		self.Children.append(Node(self,x_UL, y_UL, height_UL, width_UL, self.Grid[:height_UL, :width_UL, :], self.tol, self.Depth+1,self.Mode,partition))
 
 		# Upper right
-		self.Children.append(Node(self,x, y_L, height_U, width_L, self.Grid[height_U:,:width_L,:], self.tol, self.Depth+1,self.Mode,partition))
+		self.Children.append(Node(self,x_UR, y_UR, height_UR, width_UR, self.Grid[:height_UR, width-width_UR:, :], self.tol, self.Depth+1,self.Mode,partition))
 
 		# Lower left
-		self.Children.append(Node(self,x_R, y, height_L, width_R, self.Grid[:height_L, width_R:, :], self.tol, self.Depth+1,self.Mode,partition))
+		self.Children.append(Node(self,x_LL, y_LL, height_LL, width_LL, self.Grid[height-height_LL:, :width_LL:, :], self.tol, self.Depth+1,self.Mode,partition))
 
 		# Lower right
-		self.Children.append(Node(self,x_R, y_L, height_L, width_L,  self.Grid[height_L:, width_L:, :], self.tol, self.Depth+1,self.Mode,partition))
+		self.Children.append(Node(self,x_LR, y_LR, height_LR, width_LR, self.Grid[height_LR:, width-width_LR:, :], self.tol, self.Depth+1,self.Mode,partition))
 
 
 

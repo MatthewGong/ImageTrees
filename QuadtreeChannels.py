@@ -1,7 +1,8 @@
 import numpy as np
 import cv2 as cv
+#import tree_node as treeNode
 import treeNode
-
+from matplotlib import pyplot as plt
 
 #Global variables
 BOX_SIZE  = 2
@@ -13,7 +14,7 @@ class Quadtree:
 	"""
 
 	Attributes:
-
+         
 		RootNode :  Node,
 			Head of the tree, all nodes will be descendants of this node
 
@@ -126,10 +127,10 @@ class Quadtree:
 			# if the node is a leaf set the corners of its region to TRUE
 			if node.isleaf():
 
-				x, y, temp_h, temp_w, color = node.render()
+				y, x, temp_h, temp_w, color = node.render()
 
-				h = temp_h/2
-				w = temp_w/2
+				h = temp_h
+				w = temp_w
 
 				#if the node is in a sufficiently small region add it to the SET of edges
 				if h < 10 or w < 10:
@@ -137,9 +138,9 @@ class Quadtree:
 
 					if mode == 'corners':
 
-						left 	= x-w
+						left 	= x
 						right 	= x+w
-						up 		= y-h
+						up 		= y
 						down 	= y+h
 
 						#prevents wrap around errors
@@ -200,16 +201,15 @@ class Quadtree:
 			# if the node is a leaf set the corners of its region to TRUE
 			if node.isleaf():
 
-				x, y, temp_h, temp_w, color = node.render()
+				y, x, temp_h, temp_w, color = node.render()
 
-				h = temp_h /2.
-				w = temp_w / 2.
-				if h < 10 or w < 10:
+
+				if temp_h < 10 or temp_w < 10:
 					self.Edges.append(node)
-					edge_points.append([x,-y])
+					edge_points.append(node.pos())
 				else:
 					self.Cores.append(node)
-					core_points.append([x,-y])
+					core_points.append(node.pos())
 
 
 			else:
@@ -220,7 +220,7 @@ class Quadtree:
 		traverse_points(self.RootNode)
 
 		points = core_points + edge_points 
-
+		print points
 		return np.array(points)
 
 
@@ -229,30 +229,29 @@ class Quadtree:
 	def toImage(self, mode = "boxes"):
 
 		image = np.zeros_like(self.Grid)
-		height, width, channels = image.shape
+		height, width, channels = self.Grid.shape
+#		image = np.zeros((2*height,2*width,channels))
 
 		def traverse_img(node,mode):
 
 			if node.isleaf():
-				x, y, temp_h, temp_w, color = node.render()
+				y, x, temp_h, temp_w, color = node.render()
+				print node.render()
 
-				h = temp_h/2
-				w = temp_w/2
-
-				if mode != "boxes":
-					h += 2
-					w += 2
+				if mode == "boxes":
+					temp_h += 2
+					temp_w += 2
 				else:
-					h += 1
-					w += 1
+					temp_h += 2
+					temp_w += 2
 
-				left 	= x-w
-				right 	= x+w
-				up 		= y-h
-				down 	= y+h
+				left 	= x
+				right 	= x+temp_w
+				up 		= y
+				down 	= y+temp_h
 
 
-				#check that the boundaries are valid
+				#check that the boundaries are 	
 
 				if down >= height:
 					down = height-1
@@ -265,7 +264,11 @@ class Quadtree:
 
 				if right >= width:
 					right = width - 1
-
+				"""		
+				plt.imshow(self.Grid[up:down, left:right, :])
+				plt.show()"""
+				print node.render()
+				print left, right, up, down
 				#set the region equal to it's components
 				for channel in range(channels):
 					image[up:down, left:right, channel] = color[channel]

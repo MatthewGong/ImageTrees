@@ -1,3 +1,5 @@
+import numpy as np
+
 #Global variables
 BOX_SIZE  = 2
 DEPTH_LIMIT = 10
@@ -6,62 +8,42 @@ DEPTH_LIMIT = 10
 
 class Node:
 	"""
-
 	Attributes:
 		Parent  :  Node,
 			The parent node
-
 		Children:  List of nodes,
 			Descendants of the node
-
 		X	 	:  int,
 			The x index of the node in the tree,
-
 		Y	 	:  int,
 			The y index of the nodes in the tree,
-
 		Color 	: tuple,
 			The RGB values, but can be used with other color basis (CMYK etc)
-
 		Height 	: int,
 			The height of the region represented by the node
-
 		Width 	: int,
 			The width of the region represented by the node
-
 		Grid     : 	NxM numpy arry,
 			The portion of the image that the node is decomposing
-
 		Depth 	 :	int,
 			The depth of the node in the tree
-
 		Centers	 :	Set of nodes,
 			A subset of the nodes representing large areas of the tree
-
 	Method:
-
 		Overview of the methods in the class.
-
 		detailed documentation provided below
-
 		__init__ 	:  return None
 				Recursively split the node until the tree is built
-
 		__str__ 	:  return string
 				the string representation of the node in list form
-
 		pos 	 	:  returns list
 				a list containing the x,y coordinates of the node
-
 		isleaf 		:  return Boolean
 				true/false if the node is/isn't a leaf
-
 		render		: returns int, int, int, int, int
 				turns a node into a region of the image
-
 		procreate 	: 	return None
 				creates children of the current node.
-
 	"""
 
 	Parent   	= None
@@ -77,7 +59,6 @@ class Node:
 
 	def __init__(self,parent,x,y,height,width,grid,tol, depth, mode, partition):
 		"""
-
 		"""
 
 		self.Parent = parent
@@ -106,7 +87,7 @@ class Node:
 
 			self.procreate(self.Width, self.Height, partition)
 
-		elif MeasureDetail(self.Grid, mode, split_tol = tol, area = height*width) or (self.Width <= 15) or (self.Height <= 15) or (self.Depth > DEPTH_LIMIT):
+		elif MeasureDetail(self.Grid, mode, split_tol = tol, area = height*width) or (self.Width <= 8) or (self.Height <= 8) or (self.Depth > DEPTH_LIMIT):
 
 			###print self.Grid[:w,:h,:].shape, self.X,self.Y
 			#cv.imshow("Image",self.Grid)
@@ -213,19 +194,13 @@ class Node:
 
 def Average(channels):
 	"""
-
 	Calculates the average value for all channels
-
 	Inputs:
-
 			Channel	 : 	list of arrays,
 				flattened channels from a section of the grid
-
 	Outputs:
-
 			Averages :	list of floats,
 				the averages of the channels
-
 	"""
 
 	#find the average in the color channels
@@ -239,20 +214,14 @@ def Average(channels):
 def Manhattan(channels,area):
 	"""
 	Calculates the Manhattan metric of a given region
-
 	Inputs:
-
 		Channel	 : 	list of arrays,
 			flattened channels from a section of the grid
-
 		Area 	 : int,
 			The area of the region
-
 	Outputs:
-
 		total_distance : float,
 			the distance normalized by the area
-
 	"""
 
 	#find the averages
@@ -273,17 +242,12 @@ def Manhattan(channels,area):
 def Variance(channels, area):
 	"""
 	Calculates the Variance metric of a given region
-
 		Inputs:
-
 			Channel	 : 	list of arrays,
 				flattened channels from a section of the grid
-
 			Area 	 : int,
 				The area of the region
-
 		Outputs:
-
 			variance : float,
 				the variance normalized by the area
 	"""
@@ -299,18 +263,12 @@ def Variance(channels, area):
 def Channels(grid):
 	"""
 	decompose the region into its component channels
-
 		Inputs:
-
-
 			grid 	 : NxM numpy array,
 				The portion of the image to decompose
-
 		Outputs:
-
 			Channel	 : 	list of arrays,
 				flattened channels from a section of the grid
-
 	"""
 
 	channels = []
@@ -326,27 +284,17 @@ def Channels(grid):
 
 def MeasureDetail(grid, mode = 'Manhattan' , split_tol = 1500, area = 1 ):
 	"""
-
 		Determines whether the detail is sufficient to split the node
-
-
 		Inputs:
-
 				grid 		:	array NxMxC,
 					region of the image array NxMxC, C is the number of color data
-
 				mode		:	string,
 					chooses which splitting criterion we're using. Options are Manhattan, Variance, TBD...
-
 				split_tol	:	float,
 					determines how to split this varies wildly depending on the mode
-
 		Outputs:
-
 				boolean 	: 	True/False,
 					the detail was sufficient or insufficient
-
-
 	"""
 
 	acceptable_modes = {'Manhattan': Manhattan,'Variance' : Variance}
@@ -367,4 +315,3 @@ def MeasureDetail(grid, mode = 'Manhattan' , split_tol = 1500, area = 1 ):
 
 
 	return modes[mode] < split_tol
-

@@ -18,18 +18,21 @@ path = os.path.join(os.path.abspath(os.curdir),"images/SteeringWheel_raw.jpg")#p
 
 image = cv.imread(path)
 
-"""
+
+plt.imshow(image)
+plt.show()
+
 start = time.time()
-quad = qt.Quadtree(image,14,'Manhattan','quad')
+quad = qt.Quadtree(image,2000,'Manhattan','shift_center')
 end = time.time()-start
 
 print "Compress: " +  str(quad.nodecount()/float(image.shape[0]*image.shape[1]))
 print "Run time: " +  str(end)
 
-output = quad.toImage(quad.RootNode, mode = "smooth")
+output = quad.toImage(quad.RootNode)
 
 start = time.time()
-quad2 = qt.Quadtree(image,900,'Variance','quad')
+quad2 = qt.Quadtree(image,2000,'Variance','shift_center')
 end = time.time()-start
 
 print "Compress: " +  str(quad2.nodecount()/float(image.shape[0]*image.shape[1]))
@@ -43,16 +46,22 @@ if quad2.toMatrix():
 
 
 points = quad2.getPoints()
+print points
 tri = Delaunay(points)
 plt.triplot(points[:,0], points[:,1], tri.simplices.copy())
 plt.plot(points[:,0], points[:,1], 'o')
-plt.ylim(-1080,0)
+plt.ylim(0, 1080)
 plt.xlim(0,1920)
 plt.title('Delanauy Triangulation')
 plt.show()
 
+output = quad2.toImage()
 
-points2 = np.array(quad2.Edges)
+plt.imshow(output, origin="upper")
+plt.show()
+
+"""
+points2 = quad2.getPoints()
 
 
 tri2 = Delaunay(points2)
@@ -67,23 +76,25 @@ plt.show()
 print tri2.simplices.size
 
 start = time.time()
-quad3 = qt.Quadtree(image,16,'Manhattan','shift_center')
+quad3 = qt.Quadtree(image,16,'Manhattan','quad')
 end = time.time()-start
 
 print quad3.nodecount(), end
 
-output = quad3.toimage(quad3.RootNode, mode = "smooth")
+output = quad3.toImage(quad3.RootNode)
 
-#cv.imshow("Image",output)
+plt.imshow(output)
+plt.show()
 cv.imwrite("output3.jpg",output)
-"""
 
+"""
+"""
 testViewer = seg.Segmentation(image,14,'Manhattan','quad')
 
 testPic = testViewer.displaySegments()
 
 
-"""#print len(testPics)
+#print len(testPics)
 fs = np.zeros_like(testPic)
 
 for pic in testPics:
@@ -91,8 +102,9 @@ for pic in testPics:
 	#plt.imshow(pic)
 
 	#plt.show()
-"""
+
 print testPic.shape, testPic
 plt.imshow(testPic, cmap='nipy_spectral')
 plt.show()
+"""
 

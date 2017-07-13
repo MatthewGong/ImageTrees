@@ -207,6 +207,7 @@ class Segmentation:
 				# check
 				if origin_nodeID is not None:
 				#print current_nodeID, "boof"
+
 				# If the node is similar enough add it to visited, and the Jig and recurse
 					if compareNode(origin_nodeID, current_nodeID):
 						self.Visited[current_nodeID] = 1
@@ -217,7 +218,9 @@ class Segmentation:
 
 						# find the neighbors and recurse through them
 						for index in indices:
-							self.build_jig(jig, current_nodeID, index)
+							# make sure we're not running through the logic unnecessary times	
+							if self.Visited[index] == 0:
+								self.build_jig(jig, current_nodeID, index)
 
 					else:
 
@@ -239,7 +242,8 @@ class Segmentation:
 					
 					for index in indices:
 						#print index
-						self.build_jig(jig, current_nodeID, index)
+						if self.Visited[index] == 0:
+							self.build_jig(jig, current_nodeID, index)
 
 			else:
 				raise ValueError("What the h3ll did you do man")
