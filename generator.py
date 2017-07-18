@@ -52,8 +52,8 @@ cwd = raw_input("What directory do you want to process? yes, the whole path name
 
 tol = raw_input("What tolerance do you want to use? d defaults to 16 \n")
 
-if tol == "d";
-	tol = 16;
+if tol == "d":
+	tol = 16
 
 # kindly do not put the training image set in the repo since space is limited
 
