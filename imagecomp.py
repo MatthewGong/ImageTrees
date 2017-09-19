@@ -45,7 +45,7 @@ print quad.nodecount(), end
 
 # print quad.RootNode.Children[0].Parent
 
-output = quad.toImage(quad.RootNode, mode = "smooth")
+output = quad.toImage(quad.RootNode)
 
 cv.imwrite("output.jpg",output)
 
@@ -55,14 +55,14 @@ end = time.time()-start
 
 print quad2.nodecount(), end
 
-output2 = quad2.toImage(quad2.RootNode,mode = "smooth")
+output2 = quad2.toImage(quad2.RootNode)
 
 cv.imwrite("output2.jpg",output2)
 
-"""
+
 if quad2.toMatrix():
 	print quad2.Matrix
-"""
+
 
 cv.imwrite('mask.jpg',quad2.Matrix)
 cv.imwrite('mask2.jpg',quad2.Opening)
