@@ -15,7 +15,7 @@ class jig:
 			The coordinates of the object,
 			
 		color_profile :  [[colors],float],
-			variance and mean color of the the coress
+			variance and mean color of the the cores
 			
 
 
